@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - BITNEST Platform</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+  <link rel="stylesheet" href="/css/all.min.css">
+
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --white: #ffffff;
+      --gray: #a0aec0;
+      --dark: #1a202c;
+      --primary: #222222;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      --radius: 20px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--dark);
+      min-height: 100vh;
+    }
+
+    .admin-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 80px;
+      background: var(--white);
+      padding: 1.5rem 0;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-radius: var(--radius);
+      margin: 1rem;
+    }
+
+    .sidebar .brand {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .sidebar i {
+      font-size: 1.2rem;
+      margin: 1.2rem 0;
+      color: var(--gray);
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .sidebar i:hover {
+      color: var(--dark);
+    }
+
+    .nav-menu {
+      list-style: none;
+    }
+
+    /* Main */
+    .main-content {
+      flex: 1;
+      margin: 1rem 1rem 1rem 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+    }
+
+    .welcome-section h1 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+    }
+
+    .welcome-section p {
+      color: var(--gray);
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 15px;
+      background: #f1f1f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 1rem;
+      font-size: 1.4rem;
+      color: var(--primary);
+    }
+
+    .stat-number {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 0.3rem;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      text-decoration: none;
+      color: var(--primary);
+      transition: 0.3s;
+      border: 1px solid #f0f0f0;
+    }
+
+    .action-btn i {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+    }
+
+    .action-btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+      background: #f8f9fa;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .admin-container {
+        flex-direction: column;
+      }
+      .sidebar {
+        flex-direction: row;
+        width: 100%;
+        height: auto;
+        justify-content: space-around;
+      }
+      .main-content {
+        margin: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <i class="fas fa-chart-line fa-2x"></i>
+      </div>
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="/admin?secret=<%= query.secret %>"><i class="fas fa-home"></i></a></li>
+          <li><a href="/admin/users?secret=<%= query.secret %>"><i class="fas fa-users"></i></a></li>
+          <li><a href="/admin/wallets?secret=<%= query.secret %>"><i class="fas fa-wallet"></i></a></li>
+          <li><a href="/admin/notify?secret=<%= query.secret %>"><i class="fas fa-bell"></i></a></li>
+          <li><a href="/admin/settings?secret=<%= query.secret %>"><i class="fas fa-cog"></i></a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main-content">
+      <!-- Header -->
+      <div class="header">
+        <div class="welcome-section">
+          <h1>Welcome, Administrator!</h1>
+          <p>Manage your BITNEST platform with ease and efficiency</p>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+          <div class="stat-number"><%= formatNumber(totalUsers) %></div>
+          <div class="stat-label">Total Users</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-user-plus"></i></div>
+          <div class="stat-number"><%= formatNumber(newUsers) %></div>
+          <div class="stat-label">New Users (30 days)</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+          <div class="stat-number"><%= formatMoney(totalBalance) %></div>
+          <div class="stat-label">Total Balance</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="stat-number"><%= formatMoney(totalInvestments) %></div>
+          <div class="stat-label">Total Investments</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-exchange-alt"></i></div>
+          <div class="stat-number"><%= formatNumber(todayTransactions) %></div>
+          <div class="stat-label">Today's Transactions</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-rocket"></i></div>
+          <div class="stat-number"><%= formatNumber(activeUsers) %></div>
+          <div class="stat-label">Active Users (7 days)</div>
+        </div>
+
+        <div class="stat-card">
+  <div class="stat-icon"><i class="fas fa-chart-pie">📊</i></div>
+  <div class="stat-number"><%= formatCrypto(totalVolume) %> USDT</div>
+  <div class="stat-label">Total Volume</div>
+</div>
+
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-percentage"></i></div>
+          <div class="stat-number"><%= formatPercent(growthRate) %></div>
+          <div class="stat-label">Growth Rate</div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <h2 class="section-title">Quick Actions</h2>
+        <div class="action-grid">
+          <a href="/admin/users?secret=<%= query.secret %>" class="action-btn">
+            <i class="fas fa-user-plus"></i>
+            <span>Manage Users</span>
+          </a>
+          <a href="/admin/notify?secret=<%= query.secret %>" class="action-btn">
+            <i class="fas fa-bullhorn"></i>
+            <span>Send Notification</span>
+          </a>
+          <a href="/admin/wallets?secret=<%= query.secret %>" class="action-btn">
+            <i class="fas fa-wallet"></i>
+            <span>Wallets</span>
+          </a>
+          <a href="/admin/settings?secret=<%= query.secret %>" class="action-btn">
+            <i class="fas fa-cog"></i>
+            <span>System Settings</span>
+          </a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Simple animation on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const cards = document.querySelectorAll('.stat-card, .action-btn');
+      cards.forEach((card, index) => {
+        card.style.animation = `fadeInUp 0.5s ease ${index * 0.1}s both`;
+      });
+    });
+
+    // Animation
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

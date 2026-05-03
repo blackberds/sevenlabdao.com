@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallets Management - BITNEST Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Стили такие же как в users.ejs, но с финансовой тематикой */
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --info: #4299e1;
+            --light: #f7fafc;
+            --dark: #2d3748;
+            --gray: #a0aec0;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .back-link {
+            margin-bottom: 25px;
+        }
+
+        .back-link a {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .back-link a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border);
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        th {
+            padding: 18px 16px;
+            text-align: left;
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        th i {
+            margin-right: 8px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+            transform: translateY(-1px);
+        }
+
+        td {
+            padding: 16px;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .currency-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .currency-usd {
+            background: rgba(72, 187, 120, 0.1);
+            color: #48bb78;
+        }
+
+        .currency-btc {
+            background: rgba(247, 147, 26, 0.1);
+            color: #f7931a;
+        }
+
+        .currency-eth {
+            background: rgba(114, 137, 218, 0.1);
+            color: #7289da;
+        }
+
+        .balance-positive {
+            color: #48bb78;
+            font-weight: 700;
+        }
+
+        .balance-zero {
+            color: var(--gray);
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .table-container {
+                overflow-x: auto;
+            }
+            
+            table {
+                min-width: 800px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back-link">
+            <a href="/admin?secret=<%= query.secret %>">
+                <i class="fas fa-arrow-left"></i>Back to Dashboard
+            </a>
+        </div>
+
+        <div class="header">
+            <h1><i class="fas fa-wallet"></i>Wallets Management</h1>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number">$<%= totalBalance || '0' %></div>
+                <div class="stat-label">Total Balance</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number"><%= wallets.length %></div>
+                <div class="stat-label">Total Wallets</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number"><%= activeWallets || '0' %></div>
+                <div class="stat-label">Active Wallets</div>
+            </div>
+        </div>
+
+        <% if (wallets.length === 0) { %>
+            <div class="empty-state">
+                <i class="fas fa-wallet"></i>
+                <h3>No Wallets Found</h3>
+                <p>There are no wallets in the system yet.</p>
+            </div>
+        <% } else { %>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag"></i>ID</th>
+                            <th><i class="fas fa-user"></i>User</th>
+                            <th><i class="fas fa-money-bill-wave"></i>Balance</th>
+                            <th><i class="fas fa-coins"></i>Currency</th>
+                            <th><i class="fas fa-calendar"></i>Last Updated</th>
+                            <th><i class="fas fa-cog"></i>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% wallets.forEach(wallet => { %>
+                            <tr>
+                                <td>#<%= wallet.id %></td>
+                                <td>User #<%= wallet.user_id %></td>
+                                <td class="<%= wallet.balance > 0 ? 'balance-positive' : 'balance-zero' %>">
+                                    <%= wallet.balance %>
+                                </td>
+                                <td>
+                                    <span class="currency-badge currency-<%= wallet.currency.toLowerCase() %>">
+                                        <%= wallet.currency %>
+                                    </span>
+                                </td>
+                                <td><%= new Date(wallet.updated_at).toLocaleDateString() %></td>
+                                <td>
+                                    <a href="#" class="action-btn">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+</body>
+</html>

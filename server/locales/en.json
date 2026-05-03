@@ -1,0 +1,14 @@
+{
+  "menu": {
+    "welcome": "🎉 <b>Welcome, {name}!</b>",
+    "wallet": "💰 My Wallet", 
+    "pool": "🌊 Liquidity Pool",
+    "partners": "👥 Partner Program",
+    "settings": "⚙️ Settings"
+  },
+  "wallet": {
+    "title": "💼 <b>Your Crypto Wallet</b>",
+    "address": "📌 <b>Address:</b>",
+    "balance": "💰 <b>Balance:</b>"
+  }
+}

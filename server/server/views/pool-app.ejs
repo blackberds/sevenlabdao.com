@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitnest — Pool Investment</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; background:linear-gradient(180deg,#0F0F23 0%,#1A1A2E 100%); color:#FFFFFF; min-height:100vh; padding:16px; line-height:1.4; }
+        .container { max-width:100%; margin:0 auto; }
+        .header { text-align:center; margin-bottom:24px; padding-top:20px; }
+        .logo { width:80px; height:80px; margin:0 auto 16px auto; background:linear-gradient(135deg,#0088CC 0%,#00A2E0 100%); border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:36px; box-shadow:0 8px 32px rgba(0,136,204,0.3); }
+        .title { font-size:22px; font-weight:700; margin-bottom:8px; background:linear-gradient(135deg,#FFFFFF 0%,#E0E0E0 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .subtitle { color:#A0A0B0; font-size:14px; font-weight:400; opacity:0.9; margin-bottom:20px; }
+        
+        .investment-info { background:rgba(30,30,63,0.5); border-radius:16px; padding:20px; margin-bottom:24px; border:1px solid #3A3A5F; }
+        .info-row { display:flex; justify-content:space-between; margin-bottom:12px; }
+        .info-label { color:#A0A0B0; font-size:14px; }
+        .info-value { color:#FFFFFF; font-size:14px; font-weight:500; text-align:right; }
+        .info-highlight { color:#00D8A0; font-weight:600; }
+        
+        .wallet-buttons { margin-bottom:24px; }
+        .wallet-button { display:flex; align-items:center; background:linear-gradient(135deg,#1E1E3F 0%,#2D2D50 100%); border:1px solid #3A3A5F; border-radius:16px; padding:16px; margin-bottom:12px; width:100%; text-align:left; cursor:pointer; transition: all 0.2s ease; position:relative; overflow:hidden; }
+        .wallet-button:active { transform: scale(0.98); background:linear-gradient(135deg,#2D2D50 0%,#3A3A5F 100%); }
+        .wallet-button::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent); transition:left 0.5s ease; }
+        .wallet-button:hover::before { left:100%; }
+        .wallet-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-right:12px; font-size:18px; flex-shrink:0; }
+        .tokenpocket-icon { background:linear-gradient(135deg,#2962FF 0%,#2979FF 100%); }
+        .metamask-icon { background:linear-gradient(135deg,#F6851B 0%,#FF8C1A 100%); }
+        .browser-icon { background:linear-gradient(135deg,#6666FF 0%,#8888FF 100%); }
+        .wallet-content { flex:1; }
+        .wallet-name { font-size:16px; font-weight:600; margin-bottom:2px; color:#FFFFFF; }
+        .wallet-description { font-size:13px; color:#A0A0B0; opacity:0.8; }
+        .arrow { width:20px; height:20px; opacity:0.7; }
+        
+        .completed-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid #3A3A5F; text-align: center; }
+        .completed-button { background:linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%); color: #fff; border:none; border-radius:16px; padding:16px; width:100%; font-size:16px; font-weight:600; cursor:pointer; transition: all 0.2s ease; }
+        .completed-button:active { transform: scale(0.98); }
+        
+        .error-message { display:none; background: rgba(255,0,0,0.1); border:1px solid rgba(255,0,0,0.3); border-radius:12px; padding:12px; margin:16px 0; text-align:center; color:#ff6b6b; font-size:13px; }
+        .error-message a { color:#4ecdc4; text-decoration:underline; word-break:break-all; }
+        .hidden { display:none !important; }
+        .loading { display:none; text-align:center; padding:30px 0; }
+        .spinner { width:28px; height:28px; border:3px solid rgba(255,255,255,0.1); border-top:3px solid #0088CC; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 12px auto; }
+        
+        @keyframes spin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+        @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">💰</div>
+            <h1 class="title">Детали транзакции:</h1>
+            <p class="subtitle">Выберите способ отправки USDT</p>
+        </div>
+
+        <div class="investment-info">
+            <div class="info-row">
+                <span class="info-label">Сумма:</span>
+                <span class="info-value" id="amount-value">0 USDT</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Срок:</span>
+                <span class="info-value" id="period-value">0 дней</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Доходность:</span>
+                <span class="info-value info-highlight" id="profit-value">0%</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Ожидаемый доход:</span>
+                <span class="info-value" id="expected-profit">0 USDT</span>
+            </div>
+        </div>
+
+        <div class="wallet-buttons">
+            <button class="wallet-button" data-choice="tokenpocket" id="tokenpocket-btn">
+                <div class="wallet-icon tokenpocket-icon">🔷</div>
+                <div class="wallet-content">
+                    <div class="wallet-name">TokenPocket</div>
+                    <div class="wallet-description">Открыть в приложении</div>
+                </div>
+                <svg class="arrow" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+
+            <button class="wallet-button" data-choice="metamask" id="metamask-btn">
+                <div class="wallet-icon metamask-icon">🦊</div>
+                <div class="wallet-content">
+                    <div class="wallet-name">MetaMask</div>
+                    <div class="wallet-description">Открыть в приложении</div>
+                </div>
+                <svg class="arrow" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+
+            <button class="wallet-button" data-choice="browser" id="browser-btn">
+                <div class="wallet-icon browser-icon">🌐</div>
+                <div class="wallet-content">
+                    <div class="wallet-name">Browser</div>
+                    <div class="wallet-description">Открыть в браузере</div>
+                </div>
+                <svg class="arrow" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+        </div>
+
+        <div class="completed-section" id="completedSection" style="display: none;">
+            <button class="completed-button" id="completedBtn">
+                ✅ Я отправил USDT
+            </button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Подключаемся к пулу...</p>
+        </div>
+    </div>
+
+<script>
+    // Параметры из URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const amount = urlParams.get('amount') || '0';
+    const period = urlParams.get('period') || '0';
+    const userWallet = urlParams.get('user') || '';
+    const ref = urlParams.get('ref') || '';
+    
+    // Рассчитываем доходность
+    const profitPercent = {
+        '1': 0.4,
+        '7': 4,
+        '14': 9.5,
+        '28': 24
+    }[period] || 0;
+    
+    const expectedProfit = (parseFloat(amount) * profitPercent / 100).toFixed(4);
+    
+    // Ссылка на пул
+    const poolLink = `https://bitnest.ad/pool?amount=${amount}&period=${period}&user=${userWallet}&ref=${ref}`;
+    
+    // Ссылки для разных методов открытия
+    const walletLinks = {
+        tokenpocket: `tpdapp://open?param=${encodeURIComponent(JSON.stringify({url: poolLink, chain: 'BSC', source: 'bitnest'}))}`,
+        metamask: `https://metamask.app.link/dapp/${encodeURIComponent(poolLink)}`,
+        browser: poolLink
+    };
+
+    function isMobile() {
+        return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+    }
+
+    function openLink(url) {
+        try {
+            if (isMobile()) {
+                const newWindow = window.open(url, '_blank');
+                
+                // Показываем кнопку подтверждения через 3 секунды
+                setTimeout(showCompletedButton, 3000);
+                
+                if (!newWindow || newWindow.closed) {
+                    window.location.href = url;
+                    setTimeout(showCompletedButton, 5000);
+                }
+            } else {
+                const newWindow = window.open(url, '_blank');
+                setTimeout(showCompletedButton, 3000);
+                
+                if (!newWindow || newWindow.closed) {
+                    showError(url);
+                }
+            }
+        } catch(e) {
+            console.error('Ошибка открытия ссылки:', e);
+            showError(url);
+        }
+    }
+
+    function showCompletedButton() {
+        const completedSection = document.getElementById('completedSection');
+        if (completedSection) {
+            completedSection.style.display = 'block';
+            completedSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    function handleCompleted() {
+        // Закрываем WebApp и возвращаемся в бота
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+            Telegram.WebApp.close();
+        } else {
+            // Для обычного браузера
+            window.location.href = `https://t.me/${botUsername}?start=investment_completed`;
+        }
+    }
+
+    function showError(url) {
+        const errorElement = document.getElementById('errorMessage');
+        const linkElement = document.getElementById('errorLink');
+        if(errorElement && linkElement){
+            linkElement.href = url;
+            linkElement.textContent = url;
+            errorElement.style.display = 'block';
+        }
+    }
+
+    function showLoading() {
+        const loading = document.getElementById('loading');
+        if(loading) loading.style.display = 'block';
+    }
+
+    function hideLoading() {
+        const loading = document.getElementById('loading');
+        if(loading) loading.style.display = 'none';
+    }
+
+    function handleChoice(choice) {
+        showLoading();
+        
+        setTimeout(() => {
+            try {
+                openLink(walletLinks[choice] || walletLinks.browser);
+                hideLoading();
+            } catch(e){
+                console.error('Ошибка при выборе:', e);
+                showError(walletLinks.browser);
+                hideLoading();
+            }
+        }, 300);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Заполняем информацию об инвестиции
+        document.getElementById('amount-value').textContent = `${amount} USDT`;
+        document.getElementById('period-value').textContent = `${period} дней`;
+        document.getElementById('profit-value').textContent = `${profitPercent}%`;
+        document.getElementById('expected-profit').textContent = `${expectedProfit} USDT`;
+        
+        // Скрываем ненужные кнопки в зависимости от платформы
+        if (!isMobile()) {
+            document.getElementById('tokenpocket-btn').classList.add('hidden');
+            document.getElementById('metamask-btn').classList.add('hidden');
+        } else {
+            document.getElementById('browser-btn').classList.add('hidden');
+        }
+
+        // Обработчики для кнопок кошельков
+        document.querySelectorAll('.wallet-button').forEach(button => {
+            button.addEventListener('click', function(){
+                const choice = this.getAttribute('data-choice');
+                if(choice) handleChoice(choice);
+            });
+        });
+
+        // Обработчик для кнопки подтверждения
+        document.getElementById('completedBtn').addEventListener('click', handleCompleted);
+        
+        // Показываем кнопку через 10 секунд на всякий случай
+        setTimeout(showCompletedButton, 10000);
+    });
+</script>
+</body>
+</html>

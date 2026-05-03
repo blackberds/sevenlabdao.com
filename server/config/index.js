@@ -1,0 +1,4 @@
+export const REFERRAL_REWARD_WALLET = process.env.REFERRAL_REWARD_WALLET;
+export const USDT_CONTRACT = '0x55d398326f99059fF775485246999027B3197955';
+export const RPC_URLS = process.env.BSC_RPC_URL;
+export const BSC_SCAN_KEY = process.env.BSCSCAN_API_KEY;

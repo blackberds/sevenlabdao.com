@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details - BITNEST Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --info: #4299e1;
+            --light: #f7fafc;
+            --dark: #2d3748;
+            --gray: #a0aec0;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .back-link {
+            margin-bottom: 25px;
+        }
+
+        .back-link a {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .back-link a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .back-link i {
+            margin-right: 8px;
+        }
+
+        .user-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-right: 20px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .user-info h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .user-id {
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .section h2 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+        }
+
+        .section h2 i {
+            margin-right: 10px;
+            color: var(--secondary);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            padding: 15px;
+            background: var(--light);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .wallet-balance {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--success);
+            margin: 10px 0;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        th {
+            padding: 18px 16px;
+            text-align: left;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        th i {
+            margin-right: 8px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+            transform: translateY(-1px);
+        }
+
+        td {
+            padding: 16px;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-active {
+            background: rgba(72, 187, 120, 0.1);
+            color: #48bb78;
+        }
+
+        .status-pending {
+            background: rgba(237, 137, 54, 0.1);
+            color: #ed8936;
+        }
+
+        .status-failed {
+            background: rgba(245, 101, 101, 0.1);
+            color: #f56565;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--border);
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .user-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .user-avatar {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+            }
+            
+            table {
+                min-width: 600px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back-link">
+            <a href="/admin/users?secret=<%= query.secret %>">
+                <i class="fas fa-arrow-left"></i>Back to Users List
+            </a>
+        </div>
+
+        <div class="user-header">
+            <div class="user-avatar">
+                <%= user.username ? user.username.charAt(0).toUpperCase() : 'U' %>
+            </div>
+            <div class="user-info">
+                <h1><%= user.username || 'Unknown User' %></h1>
+                <div class="user-id">User ID: #<%= user.id %> | Telegram: @<%= user.telegram_id %></div>
+            </div>
+        </div>
+
+        <div class="grid-container">
+            <div class="section">
+                <h2><i class="fas fa-user-circle"></i>Basic Information</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">User ID</div>
+                        <div class="info-value">#<%= user.id %></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Telegram ID</div>
+                        <div class="info-value">@<%= user.telegram_id %></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Username</div>
+                        <div class="info-value"><%= user.username || 'Not set' %></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Referrer ID</div>
+                        <div class="info-value">
+                            <% if (user.referrer_id) { %>
+                                <span class="status-badge status-active">#<%= user.referrer_id %></span>
+                            <% } else { %>
+                                <span class="status-badge status-pending">No referrer</span>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Registration Date</div>
+                        <div class="info-value"><%= new Date(user.created_at).toLocaleDateString() %></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Account Age</div>
+                        <div class="info-value">
+                            <% const created = new Date(user.created_at);
+                               const now = new Date();
+                               const diffTime = Math.abs(now - created);
+                               const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); %>
+                            <%= diffDays %> days
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <% if (wallet) { %>
+            <div class="section">
+                <h2><i class="fas fa-wallet"></i>Wallet Information</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Current Balance</div>
+                        <div class="wallet-balance"><%= wallet.balance %> <%= wallet.currency %></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Currency</div>
+                        <div class="info-value"><%= wallet.currency %></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Last Updated</div>
+                        <div class="info-value"><%= new Date(wallet.updated_at).toLocaleString() %></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Wallet Status</div>
+                        <div class="info-value">
+                            <span class="status-badge status-active">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+        </div>
+
+        <div class="section">
+            <h2><i class="fas fa-chart-line"></i>Investment Portfolio (<%= investments.length %>)</h2>
+            
+            <% if (investments.length === 0) { %>
+                <div class="empty-state">
+                    <i class="fas fa-chart-pie"></i>
+                    <h3>No Investments Found</h3>
+                    <p>This user hasn't made any investments yet.</p>
+                </div>
+            <% } else { %>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i>ID</th>
+                                <th><i class="fas fa-coins"></i>Amount</th>
+                                <th><i class="fas fa-money-bill-wave"></i>Currency</th>
+                                <th><i class="fas fa-check-circle"></i>Status</th>
+                                <th><i class="fas fa-calendar"></i>Created At</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% investments.forEach(inv => { %>
+                                <tr>
+                                    <td>#<%= inv.id %></td>
+                                    <td><strong><%= inv.amount %></strong></td>
+                                    <td><%= inv.currency %></td>
+                                    <td>
+                                        <span class="status-badge 
+                                            <%= inv.status === 'active' ? 'status-active' : 
+                                                inv.status === 'pending' ? 'status-pending' : 
+                                                'status-failed' %>">
+                                            <%= inv.status %>
+                                        </span>
+                                    </td>
+                                    <td><%= new Date(inv.created_at).toLocaleDateString() %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="investment-stats" style="margin-top: 20px; padding: 15px; background: var(--light); border-radius: 10px;">
+                    <h3 style="margin-bottom: 10px; color: var(--primary);">Portfolio Summary</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div>
+                            <strong>Total Investments:</strong> <%= investments.length %>
+                        </div>
+                        <div>
+                            <strong>Active:</strong> <%= investments.filter(i => i.status === 'active').length %>
+                        </div>
+                        <div>
+                            <strong>Pending:</strong> <%= investments.filter(i => i.status === 'pending').length %>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+
+        <div class="action-buttons">
+            <a href="#" class="btn btn-primary">
+                <i class="fas fa-edit"></i>Edit User
+            </a>
+            <a href="#" class="btn btn-secondary">
+                <i class="fas fa-envelope"></i>Send Message
+            </a>
+            <a href="#" class="btn btn-secondary">
+                <i class="fas fa-history"></i>Transaction History
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Анимация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach((section, index) => {
+                section.style.animationDelay = (index * 0.2) + 's';
+            });
+        });
+    </script>
+</body>
+</html>

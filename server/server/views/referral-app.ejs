@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitnest — Wallet</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; background:linear-gradient(180deg,#0F0F23 0%,#1A1A2E 100%); color:#FFFFFF; min-height:100vh; padding:16px; line-height:1.4; }
+        .container { max-width:100%; margin:0 auto; }
+        .header { text-align:center; margin-bottom:32px; padding-top:20px; }
+        .logo { width:80px; height:80px; margin:0 auto 20px auto; background:linear-gradient(135deg,#0088CC 0%,#00A2E0 100%); border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:36px; box-shadow:0 8px 32px rgba(0,136,204,0.3); }
+        .title { font-size:24px; font-weight:700; margin-bottom:8px; background:linear-gradient(135deg,#FFFFFF 0%,#E0E0E0 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .subtitle { color:#A0A0B0; font-size:16px; font-weight:400; opacity:0.9; }
+        .wallet-buttons { margin-bottom:24px; }
+        .wallet-button { display:flex; align-items:center; background:linear-gradient(135deg,#1E1E3F 0%,#2D2D50 100%); border:1px solid #3A3A5F; border-radius:16px; padding:20px; margin-bottom:12px; width:100%; text-align:left; cursor:pointer; transition: all 0.2s ease; position:relative; overflow:hidden; animation: fadeIn 0.3s ease forwards; }
+        .wallet-button:nth-child(1){animation-delay:0.1s;} .wallet-button:nth-child(2){animation-delay:0.2s;} .wallet-button:nth-child(3){animation-delay:0.3s;}
+        .wallet-button:active { transform: scale(0.98); background:linear-gradient(135deg,#2D2D50 0%,#3A3A5F 100%); }
+        .wallet-button::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent); transition:left 0.5s ease; }
+        .wallet-button:hover::before { left:100%; }
+        .wallet-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-right:16px; font-size:20px; flex-shrink:0; }
+        .tokenpocket-icon { background:linear-gradient(135deg,#2962FF 0%,#2979FF 100%); }
+        .metamask-icon { background:linear-gradient(135deg,#F6851B 0%,#FF8C1A 100%); }
+        .browser-icon { background:linear-gradient(135deg,#6666FF 0%,#8888FF 100%); }
+        .wallet-content { flex:1; }
+        .wallet-name { font-size:17px; font-weight:600; margin-bottom:4px; color:#FFFFFF; }
+        .wallet-description { font-size:14px; color:#A0A0B0; opacity:0.8; }
+        .arrow { width:24px; height:24px; opacity:0.7; transition: opacity 0.2s ease; }
+        .wallet-button:hover .arrow { opacity:1; }
+        .error-message { display:none; background: rgba(255,0,0,0.1); border:1px solid rgba(255,0,0,0.3); border-radius:12px; padding:16px; margin:16px 0; text-align:center; color:#ff6b6b; }
+        .error-message a { color:#4ecdc4; text-decoration:underline; word-break:break-all; }
+        .hidden { display:none !important; }
+        .loading { display:none; text-align:center; padding:40px 0; }
+        .spinner { width:32px; height:32px; border:3px solid rgba(255,255,255,0.1); border-top:3px solid #0088CC; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 16px auto; }
+        
+        .registered-section { margin-top: 30px; padding-top: 20px; border-top: 1px solid #3A3A5F; text-align: center; }
+        .registered-button { display:flex; align-items:center; background:linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);color: #fff; border:1px solid #3A3A5F; border-radius:16px; padding:20px; margin-bottom:12px; width:100%; text-align:left; cursor:pointer; transition: all 0.2s ease; position:relative; overflow:hidden; animation: fadeIn 0.3s ease forwards; }
+        .registered-button:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0, 204, 136, 0.3); }
+        .registered-button:active { transform: translateY(0); }
+        
+        @keyframes spin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+        @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+        @media (max-width:380px){ .wallet-icon{width:40px;height:40px;margin-right:12px;} .wallet-name{font-size:16px;} .wallet-description{font-size:13px;} }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🔷</div>
+            <h1 class="title">Connect Wallet</h1>
+            <p class="subtitle">Выберите способ регистрации на сайте Bitnest.ad</p>
+        </div>
+
+        <div class="wallet-buttons">
+            <button class="wallet-button" data-choice="tokenpocket" id="tokenpocket-btn">
+                <div class="wallet-icon tokenpocket-icon">🔷</div>
+                <div class="wallet-content">
+                    <div class="wallet-name">TokenPocket</div>
+                    <div class="wallet-description">Мобильный кошелек</div>
+                </div>
+                <svg class="arrow" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+
+            <button class="wallet-button" data-choice="metamask" id="metamask-btn">
+                <div class="wallet-icon metamask-icon">🦊</div>
+                <div class="wallet-content">
+                    <div class="wallet-name">MetaMask</div>
+                    <div class="wallet-description">Мобильный кошелек</div>
+                </div>
+                <svg class="arrow" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="wallet-button" data-choice="browser" id="browser-btn">
+                <div class="wallet-icon browser-icon">🌐</div>
+                <div class="wallet-content">
+                    <div class="wallet-name">Browser</div>
+                    <div class="wallet-description">Открыть в браузере</div>
+                </div>
+                <svg class="arrow" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap:round" stroke-linejoin="round"/></svg>
+            </button>
+        </div>
+
+        <div class="registered-section" id="registeredSection" style="display: none;">
+            <button class="registered-button" id="registeredBtn">
+                ✅ Я зарегистрировался
+            </button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Подключаемся...</p>
+        </div>
+    </div>
+
+<script>
+    // Данные из EJS
+    const refLink = '<%= refLink %>';
+    const cleanLink = '<%= cleanLink %>';
+    const botUsername = '<%= botUsername %>';
+    const walletLinks = <%- JSON.stringify(walletLinks) %>;
+    let registeredButtonTimer = null;
+
+    function isMobile() {
+        return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+    }
+
+    function isTokenPocketInstalled() {
+        return typeof window.ethereum !== 'undefined' && 
+               (window.ethereum.isTokenPocket || 
+                navigator.userAgent.includes('TokenPocket') ||
+                window.ethereum.providers?.some(provider => provider.isTokenPocket));
+    }
+
+    function isInTokenPocketBrowser() {
+        return navigator.userAgent.includes('TokenPocket') || 
+               document.referrer.includes('tokenpocket') ||
+               window.ethereum?.isTokenPocket;
+    }
+
+    function isInTelegramWebView() {
+        return navigator.userAgent.includes('Telegram') || 
+               document.referrer.includes('telegram');
+    }
+
+function openLink(url) {
+    try {
+        // Пытаемся открыть в приложении через window.open
+        const newWindow = window.open(url, '_blank');
+        
+       
+    } catch (e) {
+        console.error('Ошибка открытия ссылки:', e);
+        showError(url);
+    }
+}
+function showError(message) {
+    const errorElement = document.getElementById('errorMessage');
+    if (errorElement) {
+        errorElement.style.display = 'block';
+        errorElement.textContent = message;
+    }
+}
+
+    function showRegisteredButton() {
+    const registeredSection = document.getElementById('registeredSection');
+    if (registeredSection) {
+        registeredSection.style.display = 'block';
+        registeredSection.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+
+    function handleRegistered() {
+        // Закрываем WebApp и возвращаемся в бота
+        if (isInTelegramWebView() && typeof Telegram !== 'undefined' && Telegram.WebApp) {
+            // Для Telegram WebApp
+            Telegram.WebApp.close();
+        } else {
+            // Для обычного браузера - открываем ссылку для возврата в бота
+            window.location.href = `https://t.me/${botUsername}?start=registered_${refLink}`;
+        }
+    }
+
+    function showError(url) {
+        const errorElement = document.getElementById('errorMessage');
+        const linkElement = document.getElementById('errorLink');
+        if(errorElement && linkElement){
+            linkElement.href = url;
+            linkElement.textContent = url;
+            errorElement.style.display = 'block';
+        }
+    }
+
+    function showLoading() {
+        const loading = document.getElementById('loading');
+        if(loading) loading.style.display = 'block';
+    }
+
+    function hideLoading() {
+        const loading = document.getElementById('loading');
+        if(loading) loading.style.display = 'none';
+    }
+    function isInTokenPocketBrowser() {
+        return navigator.userAgent.includes('TokenPocket');
+    }
+    function handleTokenPocket() {
+    showLoading();
+
+    // Формируем глубокую ссылку для TokenPocket
+    const tpDeepLink = `tpdapp://open?url=${encodeURIComponent(cleanLink)}&chain=BSC&source=BitnestFun`;
+
+    // Пытаемся открыть через глубокую ссылку в TokenPocket
+    openLinkInTokenPocket(tpDeepLink);
+}
+
+function openLinkInTokenPocket(deepLinkUrl) {
+    try {
+        // Попытка открыть ссылку через deep link
+        const newWindow = window.open(deepLinkUrl, '_blank');
+
+        if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+            // Если окно не открылось, пробуем открыть ссылку вручную
+            window.location.href = deepLinkUrl;
+        }
+    } catch (e) {
+        console.error('Ошибка открытия ссылки в TokenPocket:', e);
+        showError('Не удалось открыть кошелек TokenPocket.');
+    }
+}
+
+    function handleMetaMask() {
+        showLoading();
+        
+        if (typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask) {
+            try {
+                window.ethereum.request({ method: 'eth_chainId' })
+                    .then((currentChainId) => {
+                        if (currentChainId !== '0x38') {
+                            return window.ethereum.request({
+                                method: 'wallet_switchEthereumChain',
+                                params: [{ chainId: '0x38' }]
+                            });
+                        }
+                    })
+                    .then(() => {
+                        openLink(walletLinks.metamask);
+                    })
+                    .catch((error) => {
+                        console.log('Ошибка переключения сети MetaMask:', error);
+                        openLink(walletLinks.metamask);
+                    })
+                    .finally(() => {
+                        hideLoading();
+                    });
+            } catch (e) {
+                console.error('Ошибка MetaMask:', e);
+                openLink(walletLinks.metamask);
+                hideLoading();
+            }
+        } else {
+            openLink(walletLinks.metamask);
+            hideLoading();
+        }
+    }
+
+    function handleChoice(choice) {
+        showLoading();
+        
+        setTimeout(() => {
+            try {
+                switch(choice){
+                    case 'tokenpocket':
+                        handleTokenPocket();
+                        break;
+                    case 'metamask':
+                        handleMetaMask();
+                        break;
+                    case 'browser':
+                        openLink(walletLinks.browser);
+                        hideLoading();
+                        break;
+                    default:
+                        openLink(walletLinks.browser);
+                        hideLoading();
+                }
+            } catch(e){
+                console.error('Ошибка при выборе:', e);
+                showError(walletLinks.browser);
+                hideLoading();
+            }
+
+            // Лог на сервер
+            fetch('/process-choice', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ 
+                    choice, 
+                    ref: refLink, 
+                    display_link: cleanLink,
+                    platform: isMobile() ? 'mobile' : 'desktop',
+					
+                })
+            }).catch(e => console.log('Ошибка логирования:', e));
+        }, 300);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const mobile = isMobile();
+        if(mobile){
+            document.getElementById('browser-btn').classList.add('hidden');
+        } else {
+            document.getElementById('tokenpocket-btn').classList.add('hidden');
+            document.getElementById('metamask-btn').classList.add('hidden');
+        }
+
+        // Обработчики для кнопок кошельков
+        document.querySelectorAll('.wallet-button').forEach(button=>{
+            button.addEventListener('click', function(){
+                const choice = this.getAttribute('data-choice');
+                if(choice) handleChoice(choice);
+            });
+            button.addEventListener('touchstart', function(){ this.style.transform='scale(0.95)'; });
+            button.addEventListener('touchend', function(){ this.style.transform=''; });
+        });
+
+        // Обработчик для кнопки "Я зарегистрировался"
+        document.getElementById('registeredBtn').addEventListener('click', handleRegistered);
+        
+        // Показываем кнопку через 10 секунд на всякий случай
+        setTimeout(showRegisteredButton, 10000);
+    });
+</script>
+</body>
+</html>
